@@ -1,0 +1,59 @@
+from typing import Optional
+
+from fastapi import FastAPI, HTTPException, Query
+from pydantic import BaseModel
+
+from stubs_service.models import ScooterData, TariffZone, UserProfile
+
+app = FastAPI()
+
+
+class MoneyRequest(BaseModel):
+    user_id: str
+    order_id: str
+    amount: int
+
+
+@app.get("/scooter-data")
+async def get_scooter_data(id: Optional[str] = Query(None)):
+    if id is None:
+        raise HTTPException(
+            status_code=400,
+            detail="ID parameter is required and cannot be empty.",
+        )
+    return ScooterData(id, "korolev", 57)
+
+
+@app.get("/tariff-zone-data")
+async def get_tariff_zone_data(id: Optional[str] = Query(None)):
+    if id is None:
+        raise HTTPException(
+            status_code=400,
+            detail="ID parameter is required and cannot be empty.",
+        )
+    return TariffZone(id, price_per_minute=12, price_unlock=45, default_deposit=300)
+
+
+@app.get("/user-profile")
+async def get_user_profile(id: Optional[str] = Query(None)):
+    if id is None:
+        raise HTTPException(
+            status_code=400,
+            detail="ID parameter is required and cannot be empty.",
+        )
+    return UserProfile(id, has_subscription=False, trusted=False)
+
+
+@app.get("/configs")
+async def get_configs():
+    return {"price_coeff_settings": {"surge": 2, "low_charge_discount": 0.75}}
+
+
+@app.post("/hold-money-for-order")
+async def hold_money_for_order(request: MoneyRequest):
+    return {"status": "success"}
+
+
+@app.post("/clear-money-for-order")
+async def clear_money_for_order(request: MoneyRequest):
+    return {"status": "success"}

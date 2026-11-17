@@ -37,7 +37,7 @@ def get_user_profile(user_id: str) -> UserProfile:
     # TODO: error handling
     # TODO: data parsing
 
-    return UserProfile(id=user_id, has_subscribtion=bool(raw_data.json()['has_subscribtion']),
+    return UserProfile(id=user_id, has_subscription=bool(raw_data.json()['has_subscription']),
                        trusted=bool(raw_data.json()['trusted']))
 
 

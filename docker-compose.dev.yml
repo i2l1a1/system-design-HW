@@ -35,6 +35,19 @@ services:
     networks:
       - app
 
+  stubs:
+    build:
+      context: .
+      dockerfile: Dockerfile.stubs.dev
+    ports:
+      - "3629:3629"
+    volumes:
+      - ./stubs_service:/app/stubs_service
+    environment:
+      WATCHFILES_FORCE_POLLING: "true"
+    networks:
+      - app
+
   rental:
     build:
       context: .
@@ -52,9 +65,10 @@ services:
         condition: service_healthy
       flyway:
         condition: service_completed_successfully
+      stubs:
+        condition: service_started
     networks:
       - app
-
 
 volumes:
   postgres_data:

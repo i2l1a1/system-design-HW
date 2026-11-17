@@ -24,7 +24,7 @@ class TariffZone:
 @dataclass
 class UserProfile:
     id: str
-    has_subscribtion: bool
+    has_subscription: bool
     trusted: bool
 
 
