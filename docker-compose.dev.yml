@@ -19,6 +19,22 @@ services:
     networks:
       - app
 
+  flyway:
+    image: flyway/flyway:10
+    command: ["-connectRetries=60", "migrate"]
+    volumes:
+      - ./db/migration:/flyway/migrations
+    environment:
+      FLYWAY_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      FLYWAY_USER: ${POSTGRES_USER}
+      FLYWAY_PASSWORD: ${POSTGRES_PASSWORD}
+      FLYWAY_LOCATIONS: filesystem:/flyway/migrations
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app
+
   rental:
     build:
       context: .
@@ -34,8 +50,11 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      flyway:
+        condition: service_completed_successfully
     networks:
       - app
+
 
 volumes:
   postgres_data:
