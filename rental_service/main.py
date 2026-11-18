@@ -1,6 +1,26 @@
-from fastapi import FastAPI
+from contextlib import asynccontextmanager
 
-app = FastAPI()
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+
+from rental_service.api.routes import router
+from rental_service.repository.database import close_db, init_db
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    init_db()
+    yield
+    await close_db()
+
+
+app = FastAPI(lifespan=lifespan)
+app.include_router(router)
+
+
+@app.exception_handler(NotImplementedError)
+async def not_implemented_handler(_request: Request, _exc: NotImplementedError):
+    return JSONResponse(status_code=501, content={"detail": "Not implemented"})
 
 
 @app.get("/health")
