@@ -1,3 +1,25 @@
+x-rental: &rental
+  build:
+    context: .
+    dockerfile: Dockerfile.rental.dev
+  env_file:
+    - .env
+  environment:
+    DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    STUBS_BASE_URL: http://stubs:3629
+    WATCHFILES_FORCE_POLLING: "true"
+  volumes:
+    - ./rental_service:/app/rental_service
+  depends_on:
+    postgres:
+      condition: service_healthy
+    flyway:
+      condition: service_completed_successfully
+    stubs:
+      condition: service_started
+  networks:
+    - app
+
 services:
   postgres:
     image: postgres:16
@@ -48,27 +70,15 @@ services:
     networks:
       - app
 
-  rental:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    env_file:
-      - .env
+  rental-1:
+    <<: *rental
     ports:
       - "8000:8000"
-    volumes:
-      - ./rental_service:/app/rental_service
-    environment:
-      WATCHFILES_FORCE_POLLING: "true"
-    depends_on:
-      postgres:
-        condition: service_healthy
-      flyway:
-        condition: service_completed_successfully
-      stubs:
-        condition: service_started
-    networks:
-      - app
+
+  rental-2:
+    <<: *rental
+    ports:
+      - "8001:8000"
 
 volumes:
   postgres_data:
