@@ -33,7 +33,7 @@ def handle_create_offer_request(scooter_id: str, user_id: str):
         if scooter_data.charge < MAGIC_CONSTANT:
             actual_price_per_min = int(actual_price_per_min * float(configs.price_coeff_settings['low_charge_discount']))
 
-    actual_price_unlock = 0 if user_profile.has_subscribtion else tariff.price_unlock
+    actual_price_unlock = 0 if user_profile.has_subscription else tariff.price_unlock
 
     offer = OfferData(
         str(uuid.uuid4()),

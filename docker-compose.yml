@@ -1,0 +1,80 @@
+x-rental: &rental
+  build:
+    context: .
+    dockerfile: Dockerfile.rental
+  env_file:
+    - .env
+  environment:
+    DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+    STUBS_BASE_URL: http://stubs:3629
+  depends_on:
+    postgres:
+      condition: service_healthy
+    flyway:
+      condition: service_completed_successfully
+    stubs:
+      condition: service_started
+  networks:
+    - app
+
+services:
+  postgres:
+    image: postgres:16
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app
+
+  flyway:
+    image: flyway/flyway:10
+    command: ["-connectRetries=60", "migrate"]
+    volumes:
+      - ./db/migration:/flyway/migrations
+    environment:
+      FLYWAY_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      FLYWAY_USER: ${POSTGRES_USER}
+      FLYWAY_PASSWORD: ${POSTGRES_PASSWORD}
+      FLYWAY_LOCATIONS: filesystem:/flyway/migrations
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app
+
+  stubs:
+    build:
+      context: .
+      dockerfile: Dockerfile.stubs
+    ports:
+      - "3629:3629"
+    networks:
+      - app
+
+  rental-1:
+    <<: *rental
+    ports:
+      - "8000:8000"
+
+  rental-2:
+    <<: *rental
+    ports:
+      - "8001:8000"
+
+volumes:
+  postgres_data:
+
+networks:
+  app:

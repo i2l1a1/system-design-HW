@@ -1,0 +1,14 @@
+FROM python:3.13-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY stubs_service ./stubs_service
+
+ENV PYTHONPATH=/app
+
+EXPOSE 3629
+
+CMD ["uvicorn", "stubs_service.main:app", "--host", "0.0.0.0", "--port", "3629"]
