@@ -1,6 +1,12 @@
+import asyncio
+import time
+
 from pydantic import BaseModel
 
-from rental_service.clients.http import get_model
+from rental_service.clients.http import SourceUnavailable, get_model
+
+REFRESH_SECONDS = 60
+RETRY_SECONDS = 5
 
 
 class Config(BaseModel):
@@ -14,5 +20,18 @@ class Config(BaseModel):
 
 
 class ConfigsClient:
+    _config = Config()
+    _refresh_at = 0.0
+    _lock = asyncio.Lock()
+
     async def get_configs(self) -> Config:
-        return await get_model(Config, "/configs")
+        cache = type(self)
+        if time.monotonic() < cache._refresh_at or cache._lock.locked():
+            return cache._config
+        async with cache._lock:
+            try:
+                cache._config = await get_model(Config, "/configs")
+                cache._refresh_at = time.monotonic() + REFRESH_SECONDS
+            except SourceUnavailable:
+                cache._refresh_at = time.monotonic() + RETRY_SECONDS
+        return cache._config

@@ -48,3 +48,13 @@ class GetOrderResponse(BaseModel):
     id: str
     status: str
     current_cost: int
+
+
+class DebtResponse(BaseModel):
+    id: str
+    user_id: str
+    order_id: str
+    amount: int
+    status: str
+    created_at: datetime
+    repaid_at: datetime | None

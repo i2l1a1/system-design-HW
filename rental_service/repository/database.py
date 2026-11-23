@@ -13,7 +13,12 @@ def init_db(database_url: str | None = None) -> async_sessionmaker[AsyncSession]
     url = database_url
     if url is None:
         url = os.environ["DATABASE_URL"]
-    _engine = create_async_engine(url)
+    _engine = create_async_engine(
+        url,
+        pool_size=int(os.environ.get("DB_POOL_SIZE", 20)),
+        max_overflow=int(os.environ.get("DB_MAX_OVERFLOW", 10)),
+        pool_pre_ping=True,
+    )
     _session_factory = async_sessionmaker(
         _engine,
         class_=AsyncSession,

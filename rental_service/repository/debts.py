@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -30,6 +30,15 @@ class DebtsRepository:
             select(Debt).where(Debt.user_id == user_id, Debt.status == DebtStatus.UNPAID)
         )
         return list(rows)
+
+    async def repay(self, debt_id: str) -> Debt | None:
+        return await self._session.scalar(
+            update(Debt)
+            .where(Debt.id == debt_id, Debt.status == DebtStatus.UNPAID)
+            .values(status=DebtStatus.REPAID, repaid_at=func.now())
+            .returning(Debt)
+            .execution_options(populate_existing=True)
+        )
 
     async def get_system_unpaid_total(self) -> int:
         return await self._session.scalar(

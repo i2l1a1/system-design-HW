@@ -19,6 +19,11 @@ class OrdersRepository:
     async def get_by_id(self, order_id: str) -> Order | None:
         return await self._session.get(Order, order_id)
 
+    async def lock(self, order_id: str) -> Order | None:
+        return await self._session.scalar(
+            select(Order).where(Order.id == order_id).with_for_update().execution_options(populate_existing=True)
+        )
+
     async def get_by_offer_id(self, offer_id: str) -> Order | None:
         return await self._session.scalar(select(Order).where(Order.offer_id == offer_id))
 
@@ -53,3 +58,12 @@ class OrdersRepository:
     async def update_idempotency_key(self, idempotency_key: IdempotencyKey) -> None:
         await self._session.merge(idempotency_key)
         await self._session.flush()
+
+    async def complete_idempotency_key(self, key: str, result: str) -> bool:
+        completed = await self._session.scalar(
+            update(IdempotencyKey)
+            .where(IdempotencyKey.key == key, IdempotencyKey.result.is_(None))
+            .values(result=result)
+            .returning(IdempotencyKey.key)
+        )
+        return completed is not None
