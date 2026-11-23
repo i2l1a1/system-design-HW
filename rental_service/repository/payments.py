@@ -10,10 +10,12 @@ class PaymentsRepository:
         self._session = session
 
     async def save(self, payment_operation: PaymentOperation) -> None:
-        raise NotImplementedError
+        self._session.add(payment_operation)
+        await self._session.flush()
 
     async def get_by_payment_key(self, payment_key: str) -> PaymentOperation | None:
-        raise NotImplementedError
+        return await self._session.get(PaymentOperation, payment_key)
 
     async def update(self, payment_operation: PaymentOperation) -> None:
-        raise NotImplementedError
+        await self._session.merge(payment_operation)
+        await self._session.flush()
