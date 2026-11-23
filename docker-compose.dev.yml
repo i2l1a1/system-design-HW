@@ -80,8 +80,56 @@ services:
     ports:
       - "8001:8000"
 
+  s3:
+    # S3-совместимое хранилище для архива заказов, в проде на его месте настоящий S3
+    image: chrislusf/seaweedfs:3.80
+    command: server -s3 -s3.port=8333 -dir=/data
+    ports:
+      - "8333:8333"
+    volumes:
+      - s3_data:/data
+    networks:
+      - app
+
+  s3-init:
+    image: amazon/aws-cli:2.22.35
+    environment:
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY:-archive}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:-archive-secret}
+      AWS_DEFAULT_REGION: us-east-1
+    entrypoint: >
+      sh -c "until aws --endpoint-url http://s3:8333 s3api head-bucket --bucket orders-archive 2>/dev/null
+      || aws --endpoint-url http://s3:8333 s3api create-bucket --bucket orders-archive; do sleep 2; done"
+    depends_on:
+      s3:
+        condition: service_started
+    networks:
+      - app
+
+  archiver:
+    <<: *rental
+    command: ["python", "-m", "rental_service.archive_worker"]
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      ARCHIVE_S3_BUCKET: orders-archive
+      ARCHIVE_S3_ENDPOINT: http://s3:8333
+      AWS_ACCESS_KEY_ID: ${S3_ACCESS_KEY:-archive}
+      AWS_SECRET_ACCESS_KEY: ${S3_SECRET_KEY:-archive-secret}
+      AWS_DEFAULT_REGION: us-east-1
+      ARCHIVE_RETENTION_DAYS: ${ARCHIVE_RETENTION_DAYS:-30}
+      ARCHIVE_INTERVAL_SECONDS: ${ARCHIVE_INTERVAL_SECONDS:-3600}
+    ports: []
+    depends_on:
+      postgres:
+        condition: service_healthy
+      flyway:
+        condition: service_completed_successfully
+      s3-init:
+        condition: service_completed_successfully
+
 volumes:
   postgres_data:
+  s3_data:
 
 networks:
   app:
