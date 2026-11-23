@@ -1,15 +1,25 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class OfferStatus(str, Enum):
+class OfferStatus(StrEnum):
     CREATED = "created"
     RESERVED = "reserved"
     USED = "used"
     EXPIRED = "expired"
 
 
-class OrderStatus(str, Enum):
+class OrderStatus(StrEnum):
     PENDING_START = "pending_start"
     ACTIVE = "active"
     FINISHED = "finished"
     CANCELLED = "cancelled"
+
+
+class DebtStatus(StrEnum):
+    UNPAID = "unpaid"
+    REPAID = "repaid"
+
+
+class PaymentType(StrEnum):
+    HOLD = "hold"
+    CLEAR = "clear"
