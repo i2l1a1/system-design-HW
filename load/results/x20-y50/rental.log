@@ -1,0 +1,47 @@
+# rental-1 и rental-2 за время прогона: число ответов по эндпоинту и коду
+120000 GET /orders/{id} 200
+2400 POST /offers 200
+2400 POST /orders 200
+2400 POST /orders/{id}/finish 200
+
+# первые 40 строк
+rental-1-1  | INFO:     172.19.0.1:50258 - "POST /offers HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50258 - "POST /offers HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50258 - "POST /offers HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50258 - "POST /offers HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50258 - "POST /offers HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50258 - "POST /offers HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50258 - "POST /offers HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50258 - "POST /orders HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50274 - "POST /orders HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50274 - "GET /orders/892ee18c-3b8c-424a-b586-0fecffb16ccf HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50258 - "POST /offers HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50274 - "POST /orders HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50258 - "GET /orders/ad876bae-f484-4582-83c1-7f006b8958df HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50258 - "POST /offers HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50274 - "POST /orders HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50258 - "POST /orders HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50274 - "POST /offers HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50258 - "GET /orders/1778d4c4-1fe6-4b19-ba33-ff4fe7cab19b HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50274 - "GET /orders/4e694299-4443-4fdf-b8cd-5a58e12121e0 HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50274 - "POST /offers HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50258 - "POST /orders HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50274 - "GET /orders/db804151-c40e-48af-8160-972f7cdacfc4 HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50258 - "POST /offers HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50274 - "GET /orders/3851d0cb-9716-44cf-9c00-188abc603e22 HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50258 - "POST /offers HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50274 - "GET /orders/d5298527-7dfd-491e-9f3b-6ed17e4afabd HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50258 - "POST /offers HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50280 - "GET /orders/8bf7504a-2ba5-4f55-b5c9-81f3801480a0 HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50280 - "POST /offers HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50274 - "GET /orders/65aa12ab-e43b-45fa-85a8-b4f339315091 HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50280 - "GET /orders/4e694299-4443-4fdf-b8cd-5a58e12121e0 HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50258 - "POST /orders HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50274 - "GET /orders/3011aac8-e6ea-48f8-896b-2a62e4e8a774 HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50258 - "POST /orders HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50280 - "GET /orders/892ee18c-3b8c-424a-b586-0fecffb16ccf HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50258 - "GET /orders/c7db4897-6417-4b91-80ab-02271ccc0c22 HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50274 - "POST /orders HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50280 - "GET /orders/33148e1b-e893-48c1-b6ab-e0781347b08b HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50258 - "POST /orders HTTP/1.1" 200 OK
+rental-1-1  | INFO:     172.19.0.1:50274 - "GET /orders/3851d0cb-9716-44cf-9c00-188abc603e22 HTTP/1.1" 200 OK

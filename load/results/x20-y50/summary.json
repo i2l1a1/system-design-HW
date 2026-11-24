@@ -1,0 +1,79 @@
+{
+  "parameters": {
+    "orders_rps": 20,
+    "views_per_order": 50,
+    "duration_seconds": 120.0,
+    "ride_seconds": 15,
+    "base_urls": [
+      "http://localhost:8000",
+      "http://localhost:8001"
+    ]
+  },
+  "elapsed_seconds": 135.4,
+  "rides": {
+    "started": 2400,
+    "finished": 2400
+  },
+  "endpoints": {
+    "POST /offers": {
+      "requests": 2400,
+      "rps": 20.0,
+      "errors": 0,
+      "statuses": {
+        "200": 2400
+      },
+      "latency_ms": {
+        "mean": 34.68,
+        "p50": 14.89,
+        "p95": 109.9,
+        "p99": 261.04,
+        "max": 857.21
+      }
+    },
+    "POST /orders": {
+      "requests": 2400,
+      "rps": 20.0,
+      "errors": 0,
+      "statuses": {
+        "200": 2400
+      },
+      "latency_ms": {
+        "mean": 40.2,
+        "p50": 22.4,
+        "p95": 89.76,
+        "p99": 398.3,
+        "max": 812.13
+      }
+    },
+    "GET /orders/{id}": {
+      "requests": 120000,
+      "rps": 1000.0,
+      "errors": 0,
+      "statuses": {
+        "200": 120000
+      },
+      "latency_ms": {
+        "mean": 24.86,
+        "p50": 5.95,
+        "p95": 64.45,
+        "p99": 197.16,
+        "max": 1003.87
+      }
+    },
+    "POST /orders/{id}/finish": {
+      "requests": 2400,
+      "rps": 20.0,
+      "errors": 0,
+      "statuses": {
+        "200": 2400
+      },
+      "latency_ms": {
+        "mean": 36.84,
+        "p50": 16.71,
+        "p95": 117.91,
+        "p99": 316.44,
+        "max": 794.52
+      }
+    }
+  }
+}

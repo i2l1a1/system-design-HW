@@ -3,9 +3,11 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
+from rental_service.api.errors import domain_error_handler
 from rental_service.api.routes import router
 from rental_service.clients.http import SourceUnavailable
 from rental_service.repository.database import close_db, init_db
+from rental_service.services.errors import DomainError
 
 
 @asynccontextmanager
@@ -17,6 +19,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 app.include_router(router)
+app.add_exception_handler(DomainError, domain_error_handler)
 
 
 @app.exception_handler(NotImplementedError)
