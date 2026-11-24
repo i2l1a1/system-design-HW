@@ -62,4 +62,4 @@ def test_tight_mode(rental, db, user_id, tight_mode):
 
     rejected = rental.start(rental.create_offer(unreliable).json()["id"])
     assert rejected.status_code == 403
-    assert rejected.json()["detail"] == "LowReliability"
+    assert rejected.json()["detail"] == "user score is too low"

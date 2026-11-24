@@ -2,41 +2,21 @@ class DomainError(Exception):
     pass
 
 
-class OfferNotFound(DomainError):
+class NotFound(DomainError):
     pass
 
 
-class OfferExpired(DomainError):
+class Expired(DomainError):
     pass
 
 
-class OfferUnavailable(DomainError):
+class Forbidden(DomainError):
     pass
 
 
-class OrderNotFound(DomainError):
-    pass
-
-
-class OrderNotActive(DomainError):
-    pass
-
-
-class UserHasDebt(DomainError):
-    pass
-
-
-class LowReliability(DomainError):
+class Conflict(DomainError):
     pass
 
 
 class PaymentDeclined(DomainError):
-    pass
-
-
-class IdempotencyKeyReused(DomainError):
-    pass
-
-
-class DebtNotFound(DomainError):
     pass

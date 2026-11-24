@@ -1,28 +1,19 @@
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
-from rental_service.services.errors import (
-    DebtNotFound,
-    DomainError,
-    LowReliability,
-    OfferExpired,
-    OfferNotFound,
-    OrderNotFound,
-    PaymentDeclined,
-    UserHasDebt,
-)
+from rental_service.services.errors import DomainError, Expired, Forbidden, NotFound, PaymentDeclined
 
 
 async def domain_error_handler(_request: Request, exc: DomainError) -> JSONResponse:
     match exc:
-        case OfferNotFound() | OrderNotFound() | DebtNotFound():
+        case NotFound():
             status = 404
-        case OfferExpired():
+        case Expired():
             status = 410
         case PaymentDeclined():
             status = 402
-        case UserHasDebt() | LowReliability():
+        case Forbidden():
             status = 403
         case _:
             status = 409
-    return JSONResponse(status_code=status, content={"detail": type(exc).__name__, "id": str(exc)})
+    return JSONResponse(status_code=status, content={"detail": str(exc)})

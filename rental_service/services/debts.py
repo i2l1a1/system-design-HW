@@ -3,7 +3,7 @@ from __future__ import annotations
 from rental_service.repository.database import get_session_factory
 from rental_service.repository.debts import DebtsRepository
 from rental_service.repository.models import Debt
-from rental_service.services.errors import DebtNotFound
+from rental_service.services.errors import NotFound
 
 DEBT_PENALTY = -20
 REPAY_BONUS = 10
@@ -22,4 +22,4 @@ class DebtService:
                 return debt
             if debt := await debts.get_by_id(debt_id):
                 return debt
-        raise DebtNotFound(debt_id)
+        raise NotFound("debt not found")

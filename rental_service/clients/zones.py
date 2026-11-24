@@ -1,6 +1,5 @@
 import time
 from collections import OrderedDict
-from dataclasses import dataclass
 
 from pydantic import BaseModel
 
@@ -17,31 +16,23 @@ class TariffZone(BaseModel):
     default_deposit: int
 
 
-@dataclass
-class _Entry:
-    zone: TariffZone
-    fresh_until: float
-
-
 class TariffZonesClient:
-    _cache: OrderedDict[str, _Entry] = OrderedDict()
+    _cache: OrderedDict[str, tuple[TariffZone, float]] = OrderedDict()
 
     async def get_tariff_zone_data(self, zone_id: str, ttl_seconds: float = 600) -> TariffZone:
         cache = type(self)._cache
-        entry = cache.get(zone_id)
-        if entry is not None:
+        cached, fresh_until = cache.get(zone_id, (None, 0.0))
+        if time.monotonic() < fresh_until:
             cache.move_to_end(zone_id)
-            if time.monotonic() < entry.fresh_until:
-                return entry.zone
+            return cached
         try:
-            zone = await get_model(TariffZone, "/tariff-zone-data", id=zone_id)
+            zone, ttl = await get_model(TariffZone, "/tariff-zone-data", id=zone_id), ttl_seconds
         except SourceUnavailable:
-            if entry is None:
+            if cached is None:
                 raise
-            entry.fresh_until = time.monotonic() + RETRY_SECONDS
-            return entry.zone
-        cache[zone_id] = _Entry(zone, time.monotonic() + ttl_seconds)
+            zone, ttl = cached, RETRY_SECONDS
+        cache[zone_id] = (zone, time.monotonic() + ttl)
         cache.move_to_end(zone_id)
-        while len(cache) > CACHE_SIZE:
+        if len(cache) > CACHE_SIZE:
             cache.popitem(last=False)
         return zone
