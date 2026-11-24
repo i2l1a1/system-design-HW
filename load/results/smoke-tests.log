@@ -34,4 +34,4 @@ tests/smoke/test_orders.py::test_finish_is_idempotent PASSED             [ 93%]
 tests/smoke/test_orders.py::test_idempotency_key_of_another_order PASSED [ 96%]
 tests/smoke/test_orders.py::test_unknown_clear_is_resumed_by_retry PASSED [100%]
 
-============================= 32 passed in 18.17s ==============================
+============================= 32 passed in 13.82s ==============================

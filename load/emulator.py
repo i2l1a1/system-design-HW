@@ -2,9 +2,8 @@ import argparse
 import asyncio
 import csv
 import json
-import statistics
 import time
-from collections import defaultdict
+from collections import Counter, defaultdict
 from dataclasses import dataclass
 from itertools import cycle
 from pathlib import Path
@@ -88,7 +87,8 @@ async def docker_stats(path: Path, started_at: float, stop: asyncio.Event, inter
             at = time.perf_counter() - started_at
             for line in output.decode().splitlines():
                 name, cpu, memory = line.split(";")
-                writer.writerow((f"{at:.1f}", name, cpu.rstrip("%"), to_mib(memory.split("/")[0].strip())))
+                if cpu.endswith("%"):
+                    writer.writerow((f"{at:.1f}", name, cpu.rstrip("%"), to_mib(memory.split("/")[0].strip())))
             try:
                 await asyncio.wait_for(stop.wait(), interval)
             except TimeoutError:
@@ -102,30 +102,21 @@ def to_mib(value: str) -> float:
     return 0.0
 
 
-def percentile(values: list[float], share: float) -> float:
-    return values[min(len(values) - 1, int(len(values) * share))]
-
-
 def summarize(emulator: Emulator, arguments: argparse.Namespace, elapsed: float) -> dict:
     endpoints = {}
     for endpoint in ENDPOINTS:
         samples = [sample for sample in emulator.samples if sample.endpoint == endpoint]
-        latencies = sorted(sample.seconds * 1000 for sample in samples)
-        statuses = defaultdict(int)
-        for sample in samples:
-            statuses[str(sample.status)] += 1
+        latencies = sorted(sample.seconds * 1000 for sample in samples) or [0.0]
+        statuses = Counter(str(sample.status) for sample in samples)
         endpoints[endpoint] = {
             "requests": len(samples),
             "rps": round(len(samples) / arguments.duration, 1),
             "errors": len(samples) - statuses["200"],
             "statuses": dict(statuses),
             "latency_ms": {
-                "mean": round(statistics.fmean(latencies), 2),
-                "p50": round(percentile(latencies, 0.50), 2),
-                "p95": round(percentile(latencies, 0.95), 2),
-                "p99": round(percentile(latencies, 0.99), 2),
-                "max": round(latencies[-1], 2),
-            } if latencies else {},
+                name: round(latencies[min(len(latencies) - 1, int(len(latencies) * share))], 2)
+                for name, share in (("p50", 0.50), ("p95", 0.95), ("p99", 0.99), ("max", 1))
+            },
         }
     return {
         "parameters": {
@@ -133,7 +124,6 @@ def summarize(emulator: Emulator, arguments: argparse.Namespace, elapsed: float)
             "views_per_order": arguments.views,
             "duration_seconds": arguments.duration,
             "ride_seconds": arguments.ride_seconds,
-            "base_urls": arguments.base_urls,
         },
         "elapsed_seconds": round(elapsed, 1),
         "rides": dict(emulator.rides),
